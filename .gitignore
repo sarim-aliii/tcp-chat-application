@@ -1,2 +1,21 @@
+# IntelliJ IDEA
 .idea/
 *.iml
+out/
+
+# Maven
+target/
+
+# Gradle
+.gradle/
+build/
+
+# Compiled Java files
+*.class
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
