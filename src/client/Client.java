@@ -12,8 +12,19 @@ public class Client {
 
         try{
             Socket socket = new Socket(SERVER, PORT);
-
             System.out.println("Connected to Server!");
+
+            BufferedReader reader =
+                    new BufferedReader(
+                            new InputStreamReader(socket.getInputStream()));
+
+            PrintWriter writer =
+                    new PrintWriter(socket.getOutputStream(), true);
+
+            writer.println("Hello Ali, welcome to the TCP Chat Server!");
+
+            String reply = reader.readLine();
+            System.out.println("Server says: " + reply);
 
             socket.close();
         }
