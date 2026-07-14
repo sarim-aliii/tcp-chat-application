@@ -22,9 +22,7 @@ public class ClientManager {
     public void broadcast(ChatMessage message){
         synchronized (clients){
             for(ClientHandler client : clients){
-                try{
-                    client.sendMessage(message);
-                } catch(Exception ignored){}
+                client.sendMessage(message);
             }
         }
     }
@@ -41,20 +39,25 @@ public class ClientManager {
         return users;
     }
 
-    public void sendPrivate(ChatMessage message){
+    public boolean sendPrivate(ChatMessage message){
+        ClientHandler receiver = findClient(message.getReceiver());
 
+        if (receiver == null) return false;
+        receiver.sendMessage(message);
+
+        return true;
     }
 
     public ClientHandler findClient(String username){
         for(ClientHandler client : clients){
-            if(client.getUsername().equals(username)) return client;
+            if (username.equals(client.getUsername()))return client;
         }
         return null;
     }
 
     public boolean usernameExists(String username){
         for(ClientHandler client : clients){
-            if(client.getUsername().equals(username)) return true;
+            if (username.equals(client.getUsername())) return true;
         }
         return false;
     }

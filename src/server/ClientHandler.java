@@ -1,6 +1,7 @@
 package server;
 
 import common.ChatMessage;
+import common.MessageType;
 
 import java.io.*;
 import java.net.Socket;
@@ -9,8 +10,8 @@ public class ClientHandler implements Runnable{
     private final Socket socket;
     private final ClientManager clientManager;
 
-    private ObjectInputStream input;
-    private ObjectOutputStream output;
+    private final ObjectInputStream input;
+    private final ObjectOutputStream output;
 
     private String username;
 
@@ -32,42 +33,20 @@ public class ClientHandler implements Runnable{
                         (ChatMessage) input.readObject();
 
                 switch (message.getType()) {
-                    case LOGIN -> {
-                        username = message.getSender();
-                        System.out.println(username + " joined.");
-                        clientManager.broadcast(message);
-                        break;
-                    }
+                    case LOGIN -> handleLogin(message);
+                    case MESSAGE -> handleMessage(message);
+                    case PRIVATE -> handlePrivate(message);
+                    case USERS -> handleUsers();
+                    case LOGOUT -> handleLogout(message);
 
-                    case MESSAGE -> {
-                        System.out.println(message);
-                        clientManager.broadcast(message);
-                        break;
-                    }
-
-                    case PRIVATE -> {
-                        clientManager.sendPrivate(message);
-                        break;
-                    }
-
-                    case USERS -> {
-                        break;
-                    }
-
-                    case LOGOUT ->{
-                        System.out.println(username + " left.");
-                        clientManager.broadcast(message);
-                        return;
-                    }
-
-                    default -> {
-                        System.out.println("Unknown message type");
-                    }
+                    default -> System.out.println("Unknown message type");
                 }
             }
-        } catch (IOException | ClassNotFoundException e) {
+        }
+        catch (IOException | ClassNotFoundException e) {
             System.out.println(username + " disconnected.");
-        } finally {
+        }
+        finally {
             clientManager.removeClient(this);
             closeResources();
         }
@@ -81,18 +60,81 @@ public class ClientHandler implements Runnable{
         try{
             output.writeObject(message);
             output.flush();
-        } catch (IOException e) {
-            System.out.println(username + " disconnected.");
         }
+        catch (IOException e) {
+            running = false;
+            clientManager.removeClient(this);
+            closeResources();
+        }
+    }
+
+    private void handleLogin(ChatMessage message){
+        if (clientManager.usernameExists(message.getSender())) {
+            sendMessage(new ChatMessage(
+                    MessageType.SYSTEM,
+                    "Server",
+                    message.getSender(),
+                    "Username already exists."
+            ));
+
+            running = false;
+            return;
+        }
+
+        username = message.getSender();
+
+        System.out.println(username + " joined.");
+
+        clientManager.broadcast(message);
+    }
+
+    private void handleMessage(ChatMessage message){
+        System.out.println(message);
+        clientManager.broadcast(message);
+    }
+
+    private void handlePrivate(ChatMessage message){
+        if (!clientManager.sendPrivate(message)) {
+            sendMessage(new ChatMessage(
+                    MessageType.SYSTEM,
+                    "Server",
+                    username,
+                    "User " + message.getReceiver() + " is not online."
+            ));
+        }
+    }
+
+    private void handleUsers(){
+        String users = String.join("\n", clientManager.getOnlineUsers());
+
+        sendMessage(new ChatMessage(
+                MessageType.SYSTEM,
+                "Server",
+                username,
+                """
+                Online Users:
+                %s
+                """.formatted(users)
+        ));
+    }
+    private void handleLogout(ChatMessage message){
+        System.out.println(username + " left.");
+        clientManager.broadcast(message);
+
+        running = false;
     }
 
     private void closeResources() {
         try {
-            if (input != null) input.close();
-            if (output != null) output.close();
-            if (socket != null) socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            input.close();
+        } catch (IOException ignored) {}
+
+        try {
+            output.close();
+        } catch (IOException ignored) {}
+
+        try {
+            socket.close();
+        } catch (IOException ignored) {}
     }
 }

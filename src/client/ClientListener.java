@@ -15,7 +15,6 @@ public class ClientListener implements Runnable {
             while (true) {
                 ChatMessage message = client.receive();
 
-                System.out.println();
                 System.out.println(message.getSender() + ": " + message.getMessage());
                 System.out.print(client.getUsername() + ": ");
             }
