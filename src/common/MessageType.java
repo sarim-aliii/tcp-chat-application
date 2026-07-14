@@ -5,5 +5,6 @@ public enum MessageType {
     MESSAGE,
     PRIVATE,
     LOGOUT,
-    USERS
+    USERS,
+    SYSTEM
 }

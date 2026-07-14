@@ -21,18 +21,14 @@ public class ClientSender implements Runnable{
                 System.out.print(client.getUsername() + ": ");
 
                 String text = sc.nextLine();
-                if(text.equalsIgnoreCase("exit")){
+
+                ChatMessage message = CommandParser.parse(text, client.getUsername());
+                client.send(message);
+
+                if(message.getType() == MessageType.LOGOUT){
                     client.disconnect();
                     break;
                 }
-
-                ChatMessage message = new ChatMessage(
-                        MessageType.MESSAGE,
-                        client.getUsername(),
-                        null,
-                        text
-                );
-                client.send(message);
             }
         }
         catch(Exception e){

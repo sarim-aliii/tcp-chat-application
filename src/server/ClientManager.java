@@ -40,4 +40,22 @@ public class ClientManager {
 
         return users;
     }
+
+    public void sendPrivate(ChatMessage message){
+
+    }
+
+    public ClientHandler findClient(String username){
+        for(ClientHandler client : clients){
+            if(client.getUsername().equals(username)) return client;
+        }
+        return null;
+    }
+
+    public boolean usernameExists(String username){
+        for(ClientHandler client : clients){
+            if(client.getUsername().equals(username)) return true;
+        }
+        return false;
+    }
 }

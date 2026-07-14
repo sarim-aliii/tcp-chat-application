@@ -46,6 +46,7 @@ public class ClientHandler implements Runnable{
                     }
 
                     case PRIVATE -> {
+                        clientManager.sendPrivate(message);
                         break;
                     }
 
