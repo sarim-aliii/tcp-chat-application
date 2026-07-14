@@ -24,6 +24,13 @@ public final class UIConstants {
     // Colors
     public static final Color PRIMARY = new Color(33, 150, 243);
     public static final Color BACKGROUND = Color.WHITE;
+    public static final Color FOREGROUND = Color.WHITE;
+    public static final Color CHAT_BACKGROUND = Color.WHITE;
+    public static final Color INPUT_BACKGROUND = Color.WHITE;
+    public static final Color USER_BACKGROUND = Color.WHITE;
+    public static final Color SYSTEM_COLOR = Color.WHITE;
+    public static final Color PRIVATE_COLOR = Color.WHITE;
+    public static final Color NORMAL_COLOR = Color.WHITE;
     public static final Color USER_PANEL = new Color(245, 245, 245);
 
 }

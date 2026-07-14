@@ -3,6 +3,7 @@ package client;
 import common.ChatMessage;
 import ui.ChatFrame;
 import javax.swing.SwingUtilities;
+import utils.DateTimeUtils;
 
 public class ClientListener implements Runnable {
     private final ChatClient client;
@@ -24,6 +25,7 @@ public class ClientListener implements Runnable {
                         case MESSAGE -> showMessage(message);
                         case PRIVATE -> showPrivate(message);
                         case SYSTEM -> showSystem(message);
+                        case USER_LIST -> showUserList(message);
 
                         default -> { }
                     }
@@ -36,9 +38,15 @@ public class ClientListener implements Runnable {
     }
 
     private void showMessage(ChatMessage message){
-        chatFrame
-                .getChatPanel()
-                .appendMessage(message.getSender() + ": " + message.getMessage());
+        String formatted =
+                "[" +
+                        DateTimeUtils.format(message.getTimestamp())
+                + "] "
+                + message.getSender()
+                + ": "
+                + message.getMessage();
+
+        chatFrame.getChatPanel().appendMessage(formatted);
     }
 
     private void showPrivate(ChatMessage message){
@@ -51,5 +59,10 @@ public class ClientListener implements Runnable {
         chatFrame
                 .getChatPanel()
                 .appendMessage("[SERVER] " + message.getMessage());
+    }
+
+    private void showUserList(ChatMessage message){
+        chatFrame.getUserPanel()
+                .setUsers(message.getUsers());
     }
 }

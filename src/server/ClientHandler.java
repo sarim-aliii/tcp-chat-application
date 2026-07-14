@@ -33,11 +33,17 @@ public class ClientHandler implements Runnable{
                         (ChatMessage) input.readObject();
 
                 switch (message.getType()) {
-                    case LOGIN -> handleLogin(message);
+                    case LOGIN -> {
+                        handleLogin(message);
+                        clientManager.broadcastUserList();
+                    }
                     case MESSAGE -> handleMessage(message);
                     case PRIVATE -> handlePrivate(message);
                     case USERS -> handleUsers();
-                    case LOGOUT -> handleLogout(message);
+                    case LOGOUT -> {
+                        handleLogout(message);
+                        clientManager.broadcastUserList();
+                    }
 
                     default -> System.out.println("Unknown message type");
                 }
@@ -48,6 +54,7 @@ public class ClientHandler implements Runnable{
         }
         finally {
             clientManager.removeClient(this);
+            clientManager.broadcastUserList();
             closeResources();
         }
     }

@@ -1,6 +1,7 @@
 package server;
 
 import common.ChatMessage;
+import common.MessageType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,5 +61,16 @@ public class ClientManager {
             if (username.equals(client.getUsername())) return true;
         }
         return false;
+    }
+
+    public void broadcastUserList(){
+        List<String> users = getOnlineUsers();
+
+        ChatMessage message = new ChatMessage(
+                MessageType.USER_LIST,
+                users
+        );
+
+        broadcast(message);
     }
 }

@@ -1,27 +1,39 @@
 package ui;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import java.awt.*;
 
 public class ChatPanel extends JPanel{
-    private final JTextArea chatArea;
+    private final JTextPane chatArea;
+    private final Document document;
 
     public ChatPanel(){
         setLayout(new BorderLayout());
 
-        chatArea = new JTextArea();
+        chatArea = new JTextPane();
         chatArea.setEditable(false);
         chatArea.setFont(UIConstants.CHAT_FONT);
-        chatArea.setLineWrap(true);
-        chatArea.setWrapStyleWord(true);
+
+        document = chatArea.getDocument();
 
         JScrollPane scrollPane = new JScrollPane(chatArea);
         add(scrollPane, BorderLayout.CENTER);
     }
 
     public void appendMessage(String message){
-        chatArea.append(message + "\n");
-        chatArea.setCaretPosition(chatArea.getDocument().getLength());
+        try{
+            document.insertString(
+                    document.getLength(),
+                    message + "\n",
+                    null
+            );
+            chatArea.setCaretPosition(document.getLength());
+        }
+        catch (BadLocationException e){
+            e.printStackTrace();
+        }
     }
 
     public void clear(){

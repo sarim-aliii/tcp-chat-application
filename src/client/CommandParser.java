@@ -19,16 +19,6 @@ public class CommandParser {
             );
         }
 
-        // Online users
-        if(input.equalsIgnoreCase("/users")){
-            return new ChatMessage(
-                    MessageType.USERS,
-                    username,
-                    null,
-                    ""
-            );
-        }
-
         // Private Message
         if(input.equalsIgnoreCase("/msg")){
             String[] parts = input.split("\\s+", 3);

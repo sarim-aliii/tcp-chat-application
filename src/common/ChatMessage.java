@@ -1,6 +1,8 @@
 package common;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class ChatMessage implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -9,12 +11,19 @@ public class ChatMessage implements Serializable {
     private String sender;
     private String receiver;
     private String message;
+    private List<String> users;
+    private LocalDateTime timestamp;
 
     public ChatMessage(MessageType type, String sender, String receiver, String message) {
         this.type = type;
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
+        this.timestamp = LocalDateTime.now();
+    }
+    public ChatMessage(MessageType type, List<String> users) {
+        this.type = type;
+        this.users = users;
     }
 
     public MessageType getType() {
@@ -31,6 +40,14 @@ public class ChatMessage implements Serializable {
 
     public String getMessage() {
         return message;
+    }
+
+    public List<String> getUsers() {
+        return users;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
     @Override
