@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.time.LocalTime;
 
 public class ClientHandler implements Runnable{
     private Socket socket;
@@ -30,15 +29,17 @@ public class ClientHandler implements Runnable{
                     break;
                 }
 
-                System.out.println("Client: " + message);
+                System.out.println(message);
 
-                writer.println("[" + LocalTime.now() + "] Received: " + message);
+                Server.broadcast(message, this);
             }
         }
         catch (IOException e){
             e.printStackTrace();
         }
         finally {
+            Server.removeClient(this);
+
             try {
                 if (reader != null) reader.close();
                 if (writer != null) writer.close();
@@ -47,5 +48,9 @@ public class ClientHandler implements Runnable{
                 e.printStackTrace();
             }
         }
+    }
+
+    public void sendMessage(String message){
+        writer.println(message);
     }
 }

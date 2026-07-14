@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class Client {
     private static final String SERVER = "localhost";
     private static final int PORT = 2020;
+    private static String username;
 
     public static void main(String[] args) {
         System.out.println("Connecting...");
@@ -23,17 +24,22 @@ public class Client {
             PrintWriter writer =
                     new PrintWriter(socket.getOutputStream(), true);
 
+            System.out.print("Enter username: ");
+            username = sc.nextLine();
+
             while(true){
-                System.out.println("You: ");
+                System.out.print(username + ": ");
 
                 String message = sc.nextLine();
+                if(message.equalsIgnoreCase("exit")){
+                    writer.println("exit");
+                    break;
+                }
 
-                writer.println(message);
-
-                if(message.equalsIgnoreCase("exit")) break;
+                writer.println(username + ": " + message);
 
                 String reply = reader.readLine();
-                System.out.println("Server: " + reply);
+                System.out.println(reply);
             }
 
             reader.close();
