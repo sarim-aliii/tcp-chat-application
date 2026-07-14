@@ -42,25 +42,27 @@ public class LoginFrame extends JFrame{
 
     private void layoutComponents() {
         JPanel panel = new JPanel();
-
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         panel.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
+
+        // Add title
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-
         panel.add(titleLabel, gbc);
+
+        // Add Username Label
         gbc.gridy++;
         gbc.gridwidth = 1;
+        panel.add(usernameLabel, gbc);
 
-        panel.add(usernameField, gbc);
+        // Add Username Field
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 2;
-
         panel.add(connectButton, gbc);
 
         add(panel);

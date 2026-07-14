@@ -50,15 +50,19 @@ public class ClientManager {
     }
 
     public ClientHandler findClient(String username){
-        for(ClientHandler client : clients){
-            if (username.equals(client.getUsername()))return client;
+        synchronized (clients){
+            for(ClientHandler client : clients){
+                if (username.equals(client.getUsername()))return client;
+            }
         }
         return null;
     }
 
     public boolean usernameExists(String username){
-        for(ClientHandler client : clients){
-            if (username.equals(client.getUsername())) return true;
+        synchronized (clients){
+            for(ClientHandler client : clients){
+                if (username.equals(client.getUsername())) return true;
+            }
         }
         return false;
     }

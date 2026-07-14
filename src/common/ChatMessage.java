@@ -7,23 +7,26 @@ import java.util.List;
 public class ChatMessage implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private MessageType type;
-    private String sender;
-    private String receiver;
-    private String message;
-    private List<String> users;
-    private LocalDateTime timestamp;
+    private final MessageType type;
+    private final String sender;
+    private final String receiver;
+    private final String message;
+    private final List<String> users;
+    private final LocalDateTime timestamp = LocalDateTime.now();
 
     public ChatMessage(MessageType type, String sender, String receiver, String message) {
         this.type = type;
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
-        this.timestamp = LocalDateTime.now();
+        this.users = null;
     }
     public ChatMessage(MessageType type, List<String> users) {
         this.type = type;
         this.users = users;
+        this.sender = null;
+        this.receiver = null;
+        this.message = null;
     }
 
     public MessageType getType() {
@@ -53,9 +56,8 @@ public class ChatMessage implements Serializable {
     @Override
     public String toString() {
         return "[" + type + "] "
-                + sender
+                + (sender != null ? sender : "Server")
                 + (receiver != null ? " -> " + receiver : "")
-                + " : "
-                + message;
+                + (message != null ? " : " + message : "");
     }
 }

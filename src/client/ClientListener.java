@@ -3,6 +3,8 @@ package client;
 import common.ChatMessage;
 import ui.ChatFrame;
 import javax.swing.SwingUtilities;
+
+import ui.UIConstants;
 import utils.DateTimeUtils;
 
 public class ClientListener implements Runnable {
@@ -34,6 +36,10 @@ public class ClientListener implements Runnable {
         }
         catch(Exception e){
             System.out.println("Connection closed.");
+            SwingUtilities.invokeLater(() -> {
+                chatFrame.getChatPanel().appendMessage("[SYSTEM] Disconnected from server.");
+                // chatFrame.getInputPanel().disableInput();
+            });
         }
     }
 
@@ -50,19 +56,24 @@ public class ClientListener implements Runnable {
     }
 
     private void showPrivate(ChatMessage message){
+        String formatted = "[PRIVATE] " + message.getSender() + ": " + message.getMessage();
+
         chatFrame
                 .getChatPanel()
-                .appendMessage("[PRIVATE] " + message.getSender() + ": " + message.getMessage());
+                .appendMessage(formatted, UIConstants.PRIVATE_COLOR);
     }
 
     private void showSystem(ChatMessage message){
+        String formatted = "[SERVER] " + message.getMessage();
+
         chatFrame
                 .getChatPanel()
-                .appendMessage("[SERVER] " + message.getMessage());
+                .appendMessage(formatted, UIConstants.SYSTEM_COLOR);
     }
 
     private void showUserList(ChatMessage message){
-        chatFrame.getUserPanel()
-                .setUsers(message.getUsers());
+        chatFrame
+                .getUserPanel().
+                setUsers(message.getUsers());
     }
 }

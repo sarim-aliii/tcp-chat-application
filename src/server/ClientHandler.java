@@ -33,10 +33,7 @@ public class ClientHandler implements Runnable{
                         (ChatMessage) input.readObject();
 
                 switch (message.getType()) {
-                    case LOGIN -> {
-                        handleLogin(message);
-                        clientManager.broadcastUserList();
-                    }
+                    case LOGIN -> handleLogin(message);
                     case MESSAGE -> handleMessage(message);
                     case PRIVATE -> handlePrivate(message);
                     case USERS -> handleUsers();
@@ -50,7 +47,8 @@ public class ClientHandler implements Runnable{
             }
         }
         catch (IOException | ClassNotFoundException e) {
-            System.out.println(username + " disconnected.");
+            String displayInfo = (username != null) ? username : "Unknown Client";
+            System.out.println(displayInfo + " disconnected.");
         }
         finally {
             clientManager.removeClient(this);
@@ -63,7 +61,7 @@ public class ClientHandler implements Runnable{
         return username;
     }
 
-    public void sendMessage(ChatMessage message){
+    public synchronized void sendMessage(ChatMessage message){
         try{
             output.writeObject(message);
             output.flush();
@@ -76,7 +74,7 @@ public class ClientHandler implements Runnable{
     }
 
     private void handleLogin(ChatMessage message){
-        if (clientManager.usernameExists(message.getSender())) {
+        if(clientManager.usernameExists(message.getSender())) {
             sendMessage(new ChatMessage(
                     MessageType.SYSTEM,
                     "Server",
@@ -89,10 +87,10 @@ public class ClientHandler implements Runnable{
         }
 
         username = message.getSender();
-
         System.out.println(username + " joined.");
 
         clientManager.broadcast(message);
+        clientManager.broadcastUserList();
     }
 
     private void handleMessage(ChatMessage message){

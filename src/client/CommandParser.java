@@ -20,7 +20,7 @@ public class CommandParser {
         }
 
         // Private Message
-        if(input.equalsIgnoreCase("/msg")){
+        if(input.toLowerCase().startsWith("/msg")){
             String[] parts = input.split("\\s+", 3);
             if(parts.length < 3){
                 return new ChatMessage(
