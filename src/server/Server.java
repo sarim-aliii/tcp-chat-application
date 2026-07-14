@@ -2,6 +2,7 @@ package server;
 
 import java.io.*;
 import java.net.*;
+import java.time.LocalTime;
 
 public class Server {
     private static final int PORT = 2020;
@@ -29,11 +30,22 @@ public class Server {
                     socket.getOutputStream(), true
             );
 
-            String message = reader.readLine();
-            System.out.println("Client says: " + message);
+            while(true){
+                String message = reader.readLine();
 
-            writer.println("Hello Client!");
+                if(message == null) break;
+                if(message.equalsIgnoreCase("exit")){
+                    writer.println("Goodbye!!!");
+                    break;
+                }
 
+                System.out.println("Client: " + message);
+
+                writer.println("[" + LocalTime.now() + "] Received: " + message);
+            }
+
+            reader.close();
+            writer.close();
             socket.close();
             serverSocket.close();
         }

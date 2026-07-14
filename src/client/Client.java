@@ -2,6 +2,7 @@ package client;
 
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 public class Client {
     private static final String SERVER = "localhost";
@@ -9,6 +10,7 @@ public class Client {
 
     public static void main(String[] args) {
         System.out.println("Connecting...");
+        Scanner sc = new Scanner(System.in);
 
         try{
             Socket socket = new Socket(SERVER, PORT);
@@ -21,11 +23,22 @@ public class Client {
             PrintWriter writer =
                     new PrintWriter(socket.getOutputStream(), true);
 
-            writer.println("Hello Ali, welcome to the TCP Chat Server!");
+            while(true){
+                System.out.println("You: ");
 
-            String reply = reader.readLine();
-            System.out.println("Server says: " + reply);
+                String message = sc.nextLine();
 
+                writer.println(message);
+
+                if(message.equalsIgnoreCase("exit")) break;
+
+                String reply = reader.readLine();
+                System.out.println("Server: " + reply);
+            }
+
+            reader.close();
+            writer.close();
+            sc.close();
             socket.close();
         }
         catch (IOException e){
