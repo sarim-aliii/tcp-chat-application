@@ -1,5 +1,7 @@
 package server;
 
+import common.ChatMessage;
+
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -35,7 +37,7 @@ public class Server {
         }
     }
 
-    public static void broadcast(String message, ClientHandler sender){
+    public static void broadcast(ChatMessage message, ClientHandler sender){
         synchronized (clients){
             for(ClientHandler client : clients){
                 if(client != sender) client.sendMessage(message);

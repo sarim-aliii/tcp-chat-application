@@ -1,48 +1,60 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import common.ChatMessage;
+
+import java.io.*;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable{
     private Socket socket;
-    private BufferedReader reader;
-    private PrintWriter writer;
+    private ObjectInputStream input;
+    private ObjectOutputStream output;
+    private String username;
 
     public ClientHandler(Socket socket) throws IOException {
         this.socket = socket;
-        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        writer = new PrintWriter(socket.getOutputStream(), true);
+        output = new ObjectOutputStream(socket.getOutputStream());
+        input = new ObjectInputStream(socket.getInputStream());
     }
 
     @Override
-    public void run(){
-        try{
-            while(true){
-                String message = reader.readLine();
+    public void run() {
+        try {
+            while (true) {
+                ChatMessage message =
+                        (ChatMessage) input.readObject();
 
-                if(message == null) break;
-                if(message.equalsIgnoreCase("exit")){
-                    writer.println("Goodbye!!!");
-                    break;
+                switch (message.getType()) {
+                    case LOGIN:
+                        username = message.getSender();
+                        System.out.println(username + " joined.");
+                        Server.broadcast(message, this);
+                        break;
+
+                    case MESSAGE:
+                        System.out.println(message);
+                        Server.broadcast(message, this);
+                        break;
+
+                    case PRIVATE:
+                        break;
+
+                    case USERS:
+                        break;
+
+                    case LOGOUT:
+                        System.out.println(username + " left.");
+                        return;
                 }
-
-                System.out.println(message);
-
-                Server.broadcast(message, this);
             }
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        finally {
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println(username + " disconnected.");
+        } finally {
             Server.removeClient(this);
 
             try {
-                if (reader != null) reader.close();
-                if (writer != null) writer.close();
+                if (input != null) input.close();
+                if (output != null) output.close();
                 if (socket != null) socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -50,7 +62,12 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    public void sendMessage(String message){
-        writer.println(message);
+    public void sendMessage(ChatMessage message){
+        try{
+            output.writeObject(message);
+            output.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
