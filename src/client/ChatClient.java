@@ -27,7 +27,7 @@ public class ChatClient {
         ));
     }
 
-    synchronized void send(ChatMessage message) throws IOException{
+    public synchronized void send(ChatMessage message) throws IOException{
         output.writeObject(message);
         output.flush();
     }
