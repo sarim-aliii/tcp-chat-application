@@ -6,13 +6,20 @@ import java.io.*;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable{
-    private Socket socket;
+    private final Socket socket;
+    private final ClientManager clientManager;
+
     private ObjectInputStream input;
     private ObjectOutputStream output;
+
     private String username;
 
-    public ClientHandler(Socket socket) throws IOException {
+    private volatile boolean running = true;
+
+    public ClientHandler(Socket socket, ClientManager clientManager) throws IOException {
         this.socket = socket;
+        this.clientManager = clientManager;
+
         output = new ObjectOutputStream(socket.getOutputStream());
         input = new ObjectInputStream(socket.getInputStream());
     }
@@ -20,52 +27,69 @@ public class ClientHandler implements Runnable{
     @Override
     public void run() {
         try {
-            while (true) {
+            while (running) {
                 ChatMessage message =
                         (ChatMessage) input.readObject();
 
                 switch (message.getType()) {
-                    case LOGIN:
+                    case LOGIN -> {
                         username = message.getSender();
                         System.out.println(username + " joined.");
-                        Server.broadcast(message, this);
+                        clientManager.broadcast(message);
                         break;
+                    }
 
-                    case MESSAGE:
+                    case MESSAGE -> {
                         System.out.println(message);
-                        Server.broadcast(message, this);
+                        clientManager.broadcast(message);
                         break;
+                    }
 
-                    case PRIVATE:
+                    case PRIVATE -> {
                         break;
+                    }
 
-                    case USERS:
+                    case USERS -> {
                         break;
+                    }
 
-                    case LOGOUT:
+                    case LOGOUT ->{
                         System.out.println(username + " left.");
+                        clientManager.broadcast(message);
                         return;
+                    }
+
+                    default -> {
+                        System.out.println("Unknown message type");
+                    }
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
             System.out.println(username + " disconnected.");
         } finally {
-            Server.removeClient(this);
-
-            try {
-                if (input != null) input.close();
-                if (output != null) output.close();
-                if (socket != null) socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            clientManager.removeClient(this);
+            closeResources();
         }
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public void sendMessage(ChatMessage message){
         try{
             output.writeObject(message);
             output.flush();
+        } catch (IOException e) {
+            System.out.println(username + " disconnected.");
+        }
+    }
+
+    private void closeResources() {
+        try {
+            if (input != null) input.close();
+            if (output != null) output.close();
+            if (socket != null) socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
