@@ -43,24 +43,26 @@ public class ClientListener implements Runnable {
         }
     }
 
-    private void showMessage(ChatMessage message){
-        String formatted =
-                "[" +
-                        DateTimeUtils.format(message.getTimestamp())
-                + "] "
-                + message.getSender()
-                + ": "
-                + message.getMessage();
+    private void showMessage(ChatMessage message) {
+        String time = utils.DateTimeUtils.format(message.getTimestamp());
 
-        chatFrame.getChatPanel().appendMessage(formatted);
+        chatFrame.getChatPanel().appendRichMessage(
+                time,
+                message.getSender(),
+                message.getMessage(),
+                UIConstants.PRIMARY
+        );
     }
 
-    private void showPrivate(ChatMessage message){
-        String formatted = "[PRIVATE] " + message.getSender() + ": " + message.getMessage();
+    private void showPrivate(ChatMessage message) {
+        String time = utils.DateTimeUtils.format(message.getTimestamp());
 
-        chatFrame
-                .getChatPanel()
-                .appendMessage(formatted, UIConstants.PRIVATE_COLOR);
+        chatFrame.getChatPanel().appendRichMessage(
+                time,
+                "[PRIVATE] " + message.getSender(),
+                message.getMessage(),
+                UIConstants.PRIVATE_COLOR
+        );
     }
 
     private void showSystem(ChatMessage message){

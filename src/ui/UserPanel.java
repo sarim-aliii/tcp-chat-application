@@ -21,6 +21,8 @@ public class UserPanel extends JPanel{
 
         add(title, BorderLayout.NORTH);
         add(new JScrollPane(userList), BorderLayout.CENTER);
+
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
 
     public void addUser(String username){
