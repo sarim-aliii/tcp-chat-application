@@ -60,9 +60,17 @@ public class LoginFrame extends JFrame{
         panel.add(usernameLabel, gbc);
 
         // Add Username Field
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        panel.add(usernameField, gbc);
+
+        // Add Connect Button
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0.0;
         panel.add(connectButton, gbc);
 
         add(panel);
